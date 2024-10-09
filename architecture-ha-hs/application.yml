@@ -78,7 +78,7 @@ Resources:
             - !Ref SGbastionHost
           SubnetId:
             Fn::ImportValue:
-              !Sub "network-stack-VPCID"
+              !Sub "network-stack-PublicSubnetA"
       Tags:
         - Key: Name
           Value: webServer
@@ -178,21 +178,19 @@ Resources:
   ASGBook:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
+      AutoScalingGroupName: ASGbookstore        
+      DesiredCapacity: 2
+      MaxSize: 4
+      MinSize: 2
       LaunchTemplate:
-        AutoScalingGroupName: ASGbookstore
-        DesiredCapacity: 2
-        MaxSize: 4
-        MinSize: 2
         LaunchTemplateId:
           Ref: LaunchTemplateBookStore
-          Version: !GetAtt LaunchTemplateBookStore.LatestVersionNumber
-        TargetGroupArn:
-          - !Ref TGalb
-        VPCZoneIdentifier:
-          - Fn::ImportValue:
-              !Sub "network-stack-PrivateSubnetA"
-          - Fn::ImportValue:
-              !Sub "network-stack-PrivateSubnetB"
+        Version: !GetAtt LaunchTemplateBookStore.LatestVersionNumber
+      TargetGroupARNs:
+        - !Ref TGalb
+      VPCZoneIdentifier:
+        - Fn::ImportValue: !Sub "network-stack-PrivateSubnetA"
+        - Fn::ImportValue: !Sub "network-stack-PrivateSubnetB"
   
   #Configure scaling policy
   ScalingPolicyASG:
