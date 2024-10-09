@@ -5,6 +5,7 @@ Description:
 
 Resources:
 
+  #Configure securities groups
   SGbastionHost:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -60,4 +61,162 @@ Resources:
           FromPort: 3306
           ToPort: 3306
           SourceSecurityGroupId: !GetAtt SGwebserver.GroupId
+  
+  #Configure bastion host
+  BastionHost:
+    Type: AWS::EC2::Instance
+    Properties:      
+      ImageId: ami-0fff1b9a61dec8a5f
+      AvailabilityZone: us-east-1a
+      InstanceType: t2.micro
+      IamInstanceProfile: EC2s3
+      KeyName: iotTest
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref SGbastionHost
+          SubnetId:
+            Fn::ImportValue:
+              !Sub "network-stack-VPCID"
+      Tags:
+        - Key: Name
+          Value: webServer
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update
+          sudo dnf install -y python3.9-pip
+          sudo dnf install -y git
+          sudo dnf install -y mariadb105-server          
+          sudo pip install flask
+          sudo pip install flask-mysql
+          sudo pip install pymysql
+          sudo pip install mysql-connector-python
+          sudo pip install boto3
+          sudo service mariadb start 
+          sudo chkconfig mariadb on
+          sudo git clone https://github.com/jhormanvillanueva/ec2-rds-ssm-python.git
+          sudo mv ec2-rds-ssm-python /home/ec2-user
+        
+  #Configure Launch Template
+
+  LaunchTemplateBookStore:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: launchTemplateBookStore
+      LaunchTemplateData:
+        ImageId: ami-0fff1b9a61dec8a5f
+        InstanceType: t2.micro
+        IamInstanceProfile:
+          Name: EC2s3
+        KeyName: iotTest
+        SecurityGroupIds:
+          - !Ref SGwebserver
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            sudo apt update
+            sudo dnf install -y python3.9-pip
+            sudo dnf install -y git
+            sudo dnf install -y mariadb105-server          
+            sudo pip install flask
+            sudo pip install flask-mysql
+            sudo pip install pymysql
+            sudo pip install mysql-connector-python
+            sudo pip install boto3
+            sudo service mariadb start 
+            sudo chkconfig mariadb on
+            wget https://jav-bookstore-files.s3.amazonaws.com/bookapp.service
+            sudo mv bookapp.service /etc/systemd/system
+            sudo systemctl start bookapp.service
+            sudo systemctl enable bookapp.service
+            sudo git clone https://github.com/jhormanvillanueva/ec2-rds-ssm-python.git
+            sudo mv ec2-rds-ssm-python /home/ec2-user
+  
+  #Configure Application Load Balancer
+  ALBook:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: ALBook
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref SGALB
+      Subnets:
+        - Fn::ImportValue:
+            !Sub "network-stack-PublicSubnetA"
+        - Fn::ImportValue:
+            !Sub "network-stack-PublicSubnetB"
+      Type: application
+
+  #Configure a target group
+  TGalb:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckPath: /health
+      Name: TGalb
+      Port: 5000
+      Protocol: HTTP
+      VpcId:
+        Fn::ImportValue:
+          !Sub "network-stack-VPCID"
+      TargetType: instance
+  
+#Configure a listener
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref TGalb
+          Type: forward
+      LoadBalancerArn: !Ref ALBook
+      Port: 80
+      Protocol: HTTP
+  
+  #Configure Auto Scaling Group
+  ASGBook:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      LaunchTemplate:
+        AutoScalingGroupName: ASGbookstore
+        DesiredCapacity: 2
+        MaxSize: 4
+        MinSize: 2
+        LaunchTemplateId:
+          Ref: LaunchTemplateBookStore
+          Version: !GetAtt LaunchTemplateBookStore.LatestVersionNumber
+        TargetGroupArn:
+          - !Ref TGalb
+        VPCZoneIdentifier:
+          - Fn::ImportValue:
+              !Sub "network-stack-PrivateSubnetA"
+          - Fn::ImportValue:
+              !Sub "network-stack-PrivateSubnetB"
+  
+  #Configure scaling policy
+  ScalingPolicyASG:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:      
+      AutoScalingGroupName: !Ref ASGBook
+      PolicyType: TargetTrackingScaling
+      TargetTrackingConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ASGAverageCPUUtilization
+        TargetValue: 60
+
+Outputs:
+  ALBDNS:
+    Description: DNS ALB
+    Value: !GetAtt ALBook.DNSName
+    Export:
+      Name: ALBDNS
+  
+  BastionHost:
+    Description: ip public bastion
+    Value: !GetAtt BastionHost.PublicIp
+    Export:
+      Name: BastionHost
+  
+ 
         
