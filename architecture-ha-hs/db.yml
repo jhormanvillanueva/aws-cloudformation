@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description:
+  services about databases layer
+
+Resources:
+
+  DBbookstore:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      AvailabilityZone: us-east-1a
+      DBSubnetGroupName: !Ref dbSubnetGroup
+      VPCSecurityGroups:
+        - Fn::ImportValue: !Sub "app-stack-SGdatabases"
+      Engine: mariadb
+      MasterUsername: root
+      MasterUserPassword: '{{resolve:ssm-secure:/book/password:1}}'
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: databases
+
+  dbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS
+      SubnetIds:
+        - Fn::ImportValue: !Sub "network-stack-PrivateSubnetAA"
+        - Fn::ImportValue: !Sub "network-stack-PrivateSubnetBB"
+
+Outputs:
+
+  DBbookstore:
+    Description: endpoint of DBbookstore
+    Value: !GetAtt DBbookstore.Endpoint.Address
+  
+
+ 
+        

@@ -128,11 +128,12 @@ Resources:
             sudo service mariadb start 
             sudo chkconfig mariadb on
             wget https://jav-bookstore-files.s3.amazonaws.com/bookapp.service
-            sudo mv bookapp.service /etc/systemd/system
-            sudo systemctl start bookapp.service
-            sudo systemctl enable bookapp.service
+            wget https://jav-bookstore-files.s3.amazonaws.com/bookDB.sql
+            sudo mv bookapp.service /etc/systemd/system            
             sudo git clone https://github.com/jhormanvillanueva/ec2-rds-ssm-python.git
             sudo mv ec2-rds-ssm-python /home/ec2-user
+            sudo systemctl start bookapp.service
+            sudo systemctl enable bookapp.service
   
   #Configure Application Load Balancer
   ALBook:
@@ -215,6 +216,12 @@ Outputs:
     Value: !GetAtt BastionHost.PublicIp
     Export:
       Name: BastionHost
+  
+  SGdatabases:
+    Description: SG databases
+    Value: !GetAtt SGdatabases.GroupId
+    Export:
+      Name: !Sub ${AWS::StackName}-SGdatabases
   
  
         
