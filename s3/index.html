@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      
+        <title> Serverless App</title>
+        
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="static/css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <h1 class="text-center"> Serverless App</h1>
+
+        <div >
+            <h1>Save Item</h1>
+            Price:
+            <br>
+            <input type="text" name="itemprice" id="itprice">
+            <br> Id:
+            <br>
+            <input type="text" name="itemid" id="itid">
+            <br> Name:
+            <br>
+            <input type="text" name="itemname" id="itname">            
+            <br>
+            <input type="submit" id="saveitem" value="Save Item">
+            <br>
+            <p id="itemSaved"></p>
+            <br>
+        </div>
+
+        <div class="row" style="margin-top:20px; margin-left:20px">
+            <input type="submit" id="getitem" value="View Items">
+        <br>
+        <div id="showProfile">
+            <table id="itemTable">
+                <colgroup>
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                    <col style="width:20%">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th>Price</th>
+                        <th>Id</th>
+                        <th>Name</th>
+                        
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+         </div>
+     
+
+   
+
+
+        <!-- Footer-->
+        <footer class="py-5 bg-dark" style="margin-top:20px">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+        </footer>
+        <!-- Optional JavaScript -->
+      <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+      
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+      <script src="script.js"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
+      
+      
+    </body>
+</html>
