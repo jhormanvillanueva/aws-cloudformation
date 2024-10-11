@@ -1,0 +1,64 @@
+{
+    "users-network-social": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "userid": {"S": "user357"},
+                    "username": {"S": "Maelo"},
+                    "email": {"S": "maelo@example.com"},
+                    "age": {"N": "30"},
+                    "location": {"S": "Colombia"},
+                    "joinDate": {"S": "2023-01-15"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "userid": {"S": "user456"},
+                    "username": {"S": "Juan"},
+                    "email": {"S": "juan@example.com"},
+                    "age": {"N": "25"},
+                    "location": {"S": "Mexico"},
+                    "joinDate": {"S": "2023-02-20"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "userid": {"S": "user789"},
+                    "username": {"S": "Ana"},
+                    "email": {"S": "ana@example.com"},
+                    "age": {"N": "28"},
+                    "location": {"S": "Argentina"},
+                    "joinDate": {"S": "2023-03-10"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "userid": {"S": "user101"},
+                    "username": {"S": "Carlos"},
+                    "email": {"S": "carlos@example.com"},
+                    "age": {"N": "35"},
+                    "location": {"S": "Chile"},
+                    "joinDate": {"S": "2023-04-05"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "userid": {"S": "user202"},
+                    "username": {"S": "Sofia"},
+                    "email": {"S": "sofia@example.com"},
+                    "age": {"N": "22"},
+                    "location": {"S": "Peru"},
+                    "joinDate": {"S": "2023-05-15"}
+                }
+            }
+        }
+    ]
+}
